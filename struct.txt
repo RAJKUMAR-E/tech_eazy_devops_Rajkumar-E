@@ -1,0 +1,7 @@
+project/
+-projectA/
+--main.py
+--README.md
+-projectB/
+--index.html
+--style.css
