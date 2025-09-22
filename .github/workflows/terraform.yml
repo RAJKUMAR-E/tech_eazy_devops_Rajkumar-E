@@ -42,7 +42,8 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Get EC2 Public IP
-      id: ec2_ip
-      run: |
-        IP=$(terraform output -raw public_ip)
-        echo "EC2_IP=$IP" >> $GITHUB_ENV
+      run: echo "EC2_IP=$(terraform output -raw public_ip)" >> $GITHUB_ENV
+
+    - name: SSH into EC2 and Run Setup Script
+      run: ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.EC2_IP }} "bash -s" < ./scripts/setup.sh
+
