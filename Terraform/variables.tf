@@ -22,16 +22,6 @@ variable "name_tag" {
   default     = "loki-EC2"
 }
 
-variable "vpc_id" {
-  description = "VPC ID where EC2 will be launched"
-  type        = string
-}
-
-variable "subnet_id" {
-  description = "Subnet ID for EC2"
-  type        = string
-}
-
 variable "availability_zone" {
   default     = "ap-south-1a"
   description = "AZ for default subnet selection"
