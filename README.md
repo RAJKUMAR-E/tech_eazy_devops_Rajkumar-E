@@ -1,8 +1,10 @@
-# demo-repo
-This repo is used for experimental and educational purpose
+# Repository for Devops workflow
+Uses:
+- AWS
+- Terraform
+- Github Actions
+- Bash Scripts
 
-The Project Directory Structure is as follows:
-*View the struct.txt file in root of directory*
 
 
 
