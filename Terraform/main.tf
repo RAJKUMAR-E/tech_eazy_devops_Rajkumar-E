@@ -5,6 +5,7 @@ provider "aws" {
 resource "aws_instance" "loki_ec2" {
   ami           = var.ami_id
   instance_type = var.instance_type
+  key_name      = aws_key_pair.loki_key.key_name
 
   tags = {
     Name = var.name_tag
