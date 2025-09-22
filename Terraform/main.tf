@@ -50,7 +50,6 @@ resource "aws_instance" "web_server" {
   instance_type               = "t3.micro"
   key_name                    = "loki-prod-key"
   subnet_id                   = data.aws_subnet.default.id
-  vpc_security_group_ids      = [aws_security_group.web_sg.id]
   associate_public_ip_address = true
 
   root_block_device {
