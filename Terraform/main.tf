@@ -50,6 +50,7 @@ resource "aws_security_group" "web_sg" {
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
+    description = "SSH access"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -57,6 +58,7 @@ resource "aws_security_group" "web_sg" {
   }
 
   egress {
+    description = "Allow all outbound"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -86,9 +88,3 @@ resource "aws_instance" "web_server" {
     Name = "web-server"
   }
 }
-
-
-
-
-
-
