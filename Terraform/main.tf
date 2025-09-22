@@ -2,54 +2,28 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-# Key Pair (assumes loki-prod-key already exists in AWS)
-data "aws_key_pair" "loki_key" {
-  key_name = "loki-prod-key"
+# Get default VPC
+data "aws_vpc" "default" {
+  default = true
 }
 
-# Security Group for SSH
-resource "aws_security_group" "web_sg" {
-  name        = "web-server-sg"
-  description = "Allow SSH from anywhere"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description = "SSH access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+# Get default subnet in ap-south-1a
+data "aws_subnet" "default" {
+  filter {
+    name   = "default-for-az"
+    values = ["true"]
   }
 
-  egress {
-    description = "Allow all outbound"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+  filter {
+    name   = "availability-zone"
+    values = ["ap-south-1a"]
   }
 
-  tags = {
-    Name = "web-server-sg"
-  }
+  vpc_id = data.aws_vpc.default.id
 }
 
-# EC2 Instance
-resource "aws_instance" "web_server" {
-  ami                         = data.aws_ami.amazon_linux_2023.id
-  instance_type               = "t3.micro"
-  key_name                    = data.aws_key_pair.loki_key.key_name
-  vpc_security_group_ids      = [aws_security_group.web_sg.id]
-  subnet_id                   = var.subnet_id
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "web-server"
-  }
-}
-
-# Lookup Amazon Linux 2023 AMI (kernel 6.1, x86_64)
-data "aws_ami" "amazon_linux_2023" {
+# Get Amazon Linux 2023 AMI (x86_64, kernel 6.1)
+data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -68,6 +42,51 @@ data "aws_ami" "amazon_linux_2023" {
     values = ["hvm"]
   }
 }
+
+# Security Group for SSH
+resource "aws_security_group" "web_sg" {
+  name        = "web-server-sg"
+  description = "Allow SSH from anywhere"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "web-server-sg"
+  }
+}
+
+# EC2 Instance
+resource "aws_instance" "web_server" {
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = "t3.micro"
+  key_name                    = "loki-prod-key"
+  subnet_id                   = data.aws_subnet.default.id
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  associate_public_ip_address = true
+
+  root_block_device {
+    volume_size = 8
+    volume_type = "gp3"
+  }
+
+  tags = {
+    Name = "web-server"
+  }
+}
+
 
 
 
