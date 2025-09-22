@@ -27,12 +27,7 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
-
-    - name: Delete existing EC2 key pair if present
-      run: |
-        aws ec2 delete-key-pair --key-name loki-prod-key --region ap-south-1 || echo "Key not found, skipping delete"
-
-
+      
     - name: Terraform Plan
       run: terraform plan -out=tfplan
 
