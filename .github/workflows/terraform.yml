@@ -41,7 +41,15 @@ jobs:
 
     - name: Get EC2 Public IP
       run: echo "EC2_IP=$(terraform output -raw public_ip)" >> $GITHUB_ENV
+      
+    - name: Copy src folder and run setup on EC2
+      run: |
+        # Create destination folder on EC2
+        ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.EC2_IP }} "mkdir -p ~/app"
+        # Copy src folder to EC2
+        scp -o StrictHostKeyChecking=no -i key.pem -r src/ ec2-user@${{ env.EC2_IP }}:~/app/
+        # Run setup.sh on EC2
+        ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.EC2_IP }} "bash -s" < scripts/setup.sh
 
-    - name: SSH into EC2 and Run Setup Script
-      run: ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.EC2_IP }} "bash -s" < ./scripts/setup.sh
+
 
