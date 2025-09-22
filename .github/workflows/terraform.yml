@@ -29,8 +29,10 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -out=tfplan
 
-    - name: Terraform Apply (Create EC2)
-      run: terraform apply -auto-approve tfplan
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      env:
+        TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
 
     - name: Get EC2 Public IP
       id: ec2_ip
