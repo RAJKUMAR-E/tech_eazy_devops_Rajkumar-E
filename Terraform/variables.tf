@@ -32,4 +32,13 @@ variable "subnet_id" {
   type        = string
 }
 
+variable "availability_zone" {
+  default     = "ap-south-1a"
+  description = "AZ for default subnet selection"
+}
+
+variable "key_name" {
+  default     = "loki-prod-key"
+  description = "Name of the existing EC2 key pair"
+}
 
