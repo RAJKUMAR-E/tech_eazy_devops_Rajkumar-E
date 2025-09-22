@@ -32,3 +32,8 @@ jobs:
     - name: Terraform Apply (Create EC2)
       run: terraform apply -auto-approve tfplan
 
+    - name: Get EC2 Public IP
+      id: ec2_ip
+      run: |
+        IP=$(terraform output -raw public_ip)
+        echo "EC2_IP=$IP" >> $GITHUB_ENV
