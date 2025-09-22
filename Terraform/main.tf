@@ -10,3 +10,9 @@ resource "aws_instance" "loki_ec2" {
     Name = var.name_tag
   }
 }
+
+resource "aws_key_pair" "loki_key" {
+  key_name   = "loki-prod-key"
+  public_key = var.ssh_public_key
+}
+
