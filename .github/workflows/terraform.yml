@@ -26,11 +26,11 @@ jobs:
       uses: hashicorp/setup-terraform@v3
 
     - name: Terraform Init
-      run: terraform init
-      env:
-        TF_HTTP_USERNAME: ${{ secrets.TF_HTTP_USERNAME }}
-        TF_HTTP_PASSWORD: ${{ secrets.TF_HTTP_PASSWORD }}
-      
+      run: |
+        export TF_HTTP_USERNAME = ${{ secrets.TF_HTTP_USERNAME }}
+        export TF_HTTP_PASSWORD = ${{ secrets.TF_HTTP_PASSWORD }}
+        terraform init
+        
     - name: Terraform Plan
       run: terraform plan -out=tfplan
 
