@@ -27,8 +27,8 @@ jobs:
 
     - name: Terraform Init
       run: |
-        export TF_HTTP_USERNAME = ${{ secrets.TF_HTTP_USERNAME }}
-        export TF_HTTP_PASSWORD = ${{ secrets.TF_HTTP_PASSWORD }}
+        export TF_HTTP_USERNAME=${{ secrets.TF_HTTP_USERNAME }}
+        export TF_HTTP_PASSWORD=${{ secrets.TF_HTTP_PASSWORD }}
         terraform init
         
     - name: Terraform Plan
