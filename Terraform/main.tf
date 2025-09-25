@@ -1,63 +1,32 @@
 provider "aws" {
-  region = "ap-south-1"
+  region     = "us-west-2"
+  access_key = "AWS_ACCESS_KEY_ID"
+  secret_key = "AWS_SECRET_ACCESS_KEY_ID"
 }
 
-# Get default VPC
-data "aws_vpc" "default" {
-  default = true
-}
-
-# Get default subnet in ap-south-1a
-data "aws_subnet" "default" {
-  filter {
-    name   = "default-for-az"
-    values = ["true"]
+resource "aws_security_group" "ssh_sg" {
+  name        = "allow_ssh"
+  description = "Allow SSH inbound traffic"
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-
-  filter {
-    name   = "availability-zone"
-    values = ["ap-south-1a"]
-  }
-
-  vpc_id = data.aws_vpc.default.id
-}
-
-# Get Amazon Linux 2023 AMI (x86_64, kernel 6.1)
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-  name   = "name"
-  values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-}
-
-
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-# EC2 Instance
-resource "aws_instance" "web_server" {
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
-  key_name                    = "loki-prod-key"
-  subnet_id                   = data.aws_subnet.default.id
-  associate_public_ip_address = true
-
-  root_block_device {
-    volume_size = 8
-    volume_type = "gp3"
-  }
-
+resource "aws_instance" "demo" {
+  ami                    = "ami-04e914639d0cca79a" # Update AMI for your region and needs
+  instance_type          = "t2.micro"
+  key_name               = "your_key_pair"         # Existing AWS EC2 key pair name
+  vpc_security_group_ids = [aws_security_group.ssh_sg.id]
   tags = {
-    Name = "web-server"
+    Name = "TerraformDemoEC2"
   }
 }
